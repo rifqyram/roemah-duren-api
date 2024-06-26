@@ -9,6 +9,7 @@ import lombok.*;
 @Builder
 public class BranchRequest {
     private String id;
+    private String code;
     private String name;
     private String address;
     private String mobilePhoneNo;

@@ -36,6 +36,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(UserAccount account) {
+        log.info("Generating JWT Token for User : {}", account.getId());
         try {
             Algorithm algorithm = Algorithm.HMAC512(JWT_SECRET);
             return JWT.create()
@@ -46,12 +47,14 @@ public class JwtServiceImpl implements JwtService {
                     .withIssuer(ISSUER)
                     .sign(algorithm);
         } catch (JWTCreationException e) {
+            log.error("Error Creating JWT Token : {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ResponseMessage.ERROR_CREATING_JWT);
         }
     }
 
     @Override
     public boolean verifyJwtToken(String bearerToken) {
+        log.info("Verifying JWT Token");
         try {
             Algorithm algorithm = Algorithm.HMAC512(JWT_SECRET);
             JWTVerifier jwtVerifier = JWT.require(algorithm)
@@ -67,6 +70,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public JwtClaims getClaimsByToken(String bearerToken) {
+        log.info("Getting Claims from JWT Token");
         try {
             Algorithm algorithm = Algorithm.HMAC512(JWT_SECRET);
             JWTVerifier jwtVerifier = JWT.require(algorithm)

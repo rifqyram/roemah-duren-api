@@ -3,6 +3,7 @@ package ac.unindra.roemah_duren_api.entity;
 import ac.unindra.roemah_duren_api.constant.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
@@ -10,13 +11,9 @@ import lombok.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "m_role")
-@Builder
-public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
-    @Column(name = "role")
+@SuperBuilder
+public class Role extends BaseEntity {
+    @Column(name = "role", nullable = false, unique = true)
     @Enumerated(EnumType.STRING)
     private UserRole role;
 }

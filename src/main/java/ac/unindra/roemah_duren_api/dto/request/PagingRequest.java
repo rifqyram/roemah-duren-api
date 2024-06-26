@@ -10,4 +10,5 @@ import lombok.*;
 public class PagingRequest {
     private Integer size;
     private Integer page;
+    private String query;
 }

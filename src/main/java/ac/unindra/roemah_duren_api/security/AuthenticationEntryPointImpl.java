@@ -22,11 +22,25 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         CommonResponse<?> res = CommonResponse.builder()
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
-                .message(authException.getMessage())
+                .message(getErrorMessage(authException))
                 .build();
         String responseString = objectMapper.writeValueAsString(res);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(responseString);
+    }
+
+    private String getErrorMessage(AuthenticationException authException) {
+        String errorMessage = authException.getMessage();
+
+        if ("Bad credentials".equals(errorMessage)) {
+            errorMessage = "Email atau Password tidak valid";
+        } else if ("Full authentication is required to access this resource".equals(errorMessage)) {
+            errorMessage = "Anda tidak diizinkan untuk mengakses halaman ini";
+        } else if ("User is disabled".equalsIgnoreCase(errorMessage)) {
+            errorMessage = "Akun Anda nonaktif, silahkan verifikasi akun Anda atau hubungi admin";
+        }
+
+        return errorMessage;
     }
 }

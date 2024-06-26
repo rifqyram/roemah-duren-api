@@ -12,5 +12,5 @@ public class CustomerResponse {
     private String name;
     private String address;
     private String email;
-    private String phoneNumberNo;
+    private String mobilePhoneNo;
 }

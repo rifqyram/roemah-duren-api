@@ -8,25 +8,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.Date;
-
 @Entity
-@Table(name = ConstantTable.OUTCOME)
+@Table(name = ConstantTable.ADMIN)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class Outcome extends BaseEntity {
-    private Date outDate;
-    private Long amount;
-    private String description;
-    @ManyToOne
-    @JoinColumn(name = "branch_id")
-    private Branch branch;
+public class Admin extends BaseEntity {
+    private String nip;
+    private String name;
+    private String mobilePhoneNo;
 
-    @PrePersist
-    public void prePersist() {
-        outDate = new Date();
-    }
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_account_id", unique = true, nullable = false)
+    private UserAccount userAccount;
 }

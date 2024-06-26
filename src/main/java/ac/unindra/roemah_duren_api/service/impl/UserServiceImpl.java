@@ -4,6 +4,7 @@ import ac.unindra.roemah_duren_api.entity.UserAccount;
 import ac.unindra.roemah_duren_api.repository.UserAccountRepository;
 import ac.unindra.roemah_duren_api.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,26 +16,36 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UserAccountRepository userAccountRepository;
 
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userAccountRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("username not found"));
+        log.info("Start loadUserByUsername : {}", System.currentTimeMillis());
+        UserAccount userAccount = userAccountRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("username not found"));
+        log.info("End loadUserByUsername : {}", System.currentTimeMillis());
+        return userAccount;
     }
 
     @Transactional(readOnly = true)
     @Override
     public UserAccount getByUserId(String id) {
-        return userAccountRepository.findById(id)
+        log.info("Start getByUserId : {}", System.currentTimeMillis());
+        UserAccount userAccount = userAccountRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
+        log.info("End getByUserId : {}", System.currentTimeMillis());
+        return userAccount;
     }
 
     @Override
     public UserAccount getByContext() {
+        log.info("Start getByContext : {}", System.currentTimeMillis());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userAccountRepository.findByEmail(authentication.getPrincipal().toString())
+        UserAccount userAccount = userAccountRepository.findByEmail(authentication.getPrincipal().toString())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
+        log.info("End getByContext : {}", System.currentTimeMillis());
+        return userAccount;
     }
 }

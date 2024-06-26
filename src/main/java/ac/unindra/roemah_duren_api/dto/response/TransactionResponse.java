@@ -10,8 +10,12 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class TransactionResponse {
-    private String customerId;
-    private String branchId;
+    private String id;
+    private CustomerResponse customer;
+    private BranchResponse branch;
+    private BranchResponse targetBranch;
     private List<TransactionDetailResponse> transactionDetails;
+    private String transDate;
+    private String transactionType;
     private Long totalPrice;
 }

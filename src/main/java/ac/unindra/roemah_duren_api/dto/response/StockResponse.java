@@ -2,6 +2,8 @@ package ac.unindra.roemah_duren_api.dto.response;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -9,7 +11,9 @@ import lombok.*;
 @Builder
 public class StockResponse {
     private String id;
-    private String productId;
+    private ProductResponse product;
     private Integer stock;
     private BranchResponse branch;
+    private String updatedDate;
+    private List<TransactionDetailResponse> transactionDetails;
 }

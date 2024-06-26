@@ -7,7 +7,7 @@ public class ConstantTable {
     public static final String CUSTOMER = "m_customer";
     public static final String BRANCH = "m_branch";
     public static final String STOCK = "m_stock";
+    public static final String ADMIN = "m_admin";
     public static final String TRANSACTION = "t_transaction";
     public static final String TRANSACTION_DETAIL = "t_transaction_detail";
-    public static final String OUTCOME = "m_outcome";
 }

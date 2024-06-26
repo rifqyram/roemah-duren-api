@@ -12,5 +12,7 @@ import java.util.List;
 public class TransactionRequest {
     private String customerId;
     private String branchId;
+    private String targetBranchId;
     private List<TransactionDetailRequest> transactionDetails;
+    private String transactionType;
 }

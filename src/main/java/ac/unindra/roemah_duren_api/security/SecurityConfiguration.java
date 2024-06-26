@@ -36,9 +36,6 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req -> req.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/transactions/status").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/products/images/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

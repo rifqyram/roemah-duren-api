@@ -48,11 +48,13 @@ public class BranchController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getPagination(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
-            @RequestParam(name = "size", defaultValue = "10") Integer size
+            @RequestParam(name = "size", defaultValue = "10") Integer size,
+            @RequestParam(name = "q", required = false) String query
     ) {
         Page<BranchResponse> response = branchService.getPagination(PagingRequest.builder()
                 .page(page)
                 .size(size)
+                .query(query)
                 .build());
         CommonResponse<List<BranchResponse>> commonResponse = CommonResponse.<List<BranchResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
@@ -64,7 +66,7 @@ public class BranchController {
                         .hasNext(response.hasNext())
                         .hasPrevious(response.hasPrevious())
                         .totalPages(response.getTotalPages())
-                        .totalElement(response.getTotalElements())
+                        .totalElements(response.getTotalElements())
                         .build())
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(commonResponse);
