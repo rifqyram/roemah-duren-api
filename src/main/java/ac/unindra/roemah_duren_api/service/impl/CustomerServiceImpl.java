@@ -31,6 +31,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(rollbackFor = Exception.class)
     public CustomerResponse create(CustomerRequest request) {
         log.info("Start create customer {}", System.currentTimeMillis());
+
+        checkNullAndSet(request);
+
         Customer customer = Customer.builder()
                 .name(request.getName())
                 .email(request.getEmail())
@@ -79,6 +82,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(rollbackFor = Exception.class)
     public CustomerResponse update(CustomerRequest request) {
         log.info("Start update customer {}", System.currentTimeMillis());
+        checkNullAndSet(request);
         Customer customer = getById(request.getId());
         customer.setName(request.getName());
         customer.setEmail(request.getEmail());
@@ -103,9 +107,21 @@ public class CustomerServiceImpl implements CustomerService {
                 .id(customer.getId())
                 .name(customer.getName())
                 .email(customer.getEmail())
-                .mobilePhoneNo("0" + customer.getMobilePhoneNo())
+                .mobilePhoneNo(StringUtils.hasText(customer.getMobilePhoneNo()) ? "0" + customer.getMobilePhoneNo() : null)
                 .address(customer.getAddress())
                 .build();
     }
 
+
+    private void checkNullAndSet(CustomerRequest request) {
+        if (!StringUtils.hasText(request.getAddress())) {
+            request.setAddress(null);
+        }
+        if (!StringUtils.hasText(request.getMobilePhoneNo())) {
+            request.setMobilePhoneNo(null);
+        }
+        if (!StringUtils.hasText(request.getEmail())) {
+            request.setEmail(null);
+        }
+    }
 }

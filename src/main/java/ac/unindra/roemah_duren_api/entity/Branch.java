@@ -42,6 +42,7 @@ public class Branch extends BaseEntity {
     public BranchResponse toResponse() {
         return BranchResponse.builder()
                 .id(id)
+                .code(code)
                 .name(name)
                 .address(address)
                 .mobilePhoneNo(mobilePhoneNo)

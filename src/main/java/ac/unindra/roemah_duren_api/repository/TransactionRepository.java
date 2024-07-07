@@ -26,16 +26,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
         return (root, query, criteriaBuilder) -> {
             if (!StringUtils.hasText(q)) return criteriaBuilder.conjunction();
             return criteriaBuilder.or(
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("customer").get("name")), "%" + q.toLowerCase() + "%"),
-                    criteriaBuilder.equal(root.get("branch").get("id"), q),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("branch").get("name")), "%" + q.toLowerCase() + "%"),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("targetBranch").get("name")), "%" + q.toLowerCase() + "%"),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("transactionType")), "%" + q.toLowerCase() + "%")
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("transactionType")), "%" + TransactionType.fromString(q.toLowerCase()) + "%")
             );
         };
-    }
-
-    static Specification<Transaction> searchTransactionPerDay() {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(criteriaBuilder.function("date", String.class, root.get("transDate")), criteriaBuilder.function("date", String.class, criteriaBuilder.currentDate()));
     }
 }

@@ -51,12 +51,11 @@ public class AuthServiceImpl implements AuthService {
 
         Role superAdmin = roleService.getOrSave(UserRole.ROLE_SUPER_ADMIN);
         Role admin = roleService.getOrSave(UserRole.ROLE_ADMIN);
-        Role customer = roleService.getOrSave(UserRole.ROLE_CUSTOMER);
 
         UserAccount account = UserAccount.builder()
                 .email(superAdminEmail.toLowerCase())
                 .password(passwordEncoder.encode(superAdminPassword))
-                .role(List.of(superAdmin, admin, customer))
+                .role(List.of(superAdmin, admin))
                 .isEnable(true)
                 .build();
 
@@ -70,14 +69,13 @@ public class AuthServiceImpl implements AuthService {
     public RegisterResponse registerAdmin(AuthRequest request) {
         log.info("Start register admin: {}", System.currentTimeMillis());
         Role roleAdmin = roleService.getOrSave(UserRole.ROLE_ADMIN);
-        Role roleCustomer = roleService.getOrSave(UserRole.ROLE_CUSTOMER);
 
         String hashPassword = passwordEncoder.encode(request.getPassword());
 
         UserAccount account = UserAccount.builder()
                 .email(request.getEmail().toLowerCase())
                 .password(hashPassword)
-                .role(List.of(roleAdmin, roleCustomer))
+                .role(List.of(roleAdmin))
                 .isEnable(true)
                 .build();
 

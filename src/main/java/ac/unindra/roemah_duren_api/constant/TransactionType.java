@@ -8,8 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 public enum TransactionType {
     INBOUND("Pembelian"),
     SALE("Penjualan"),
-    TRANSFER("Transfer"),
-    RETURN("Pengembalian"),;
+    TRANSFER("Transfer");
 
     private final String type;
 
@@ -23,6 +22,6 @@ public enum TransactionType {
                 return transactionType;
             }
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tipe Transaksi tidak ditemukan");
+        return null;
     }
 }

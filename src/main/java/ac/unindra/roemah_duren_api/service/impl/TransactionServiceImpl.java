@@ -72,7 +72,7 @@ public class TransactionServiceImpl implements TransactionService {
             Stock stock = stockService.getById(transactionDetail.getStockId());
             detail.setStock(stock);
 
-            if (transaction.getTransactionType().equals(TransactionType.INBOUND) || transaction.getTransactionType().equals(TransactionType.RETURN)) {
+            if (transaction.getTransactionType().equals(TransactionType.INBOUND)) {
                 stock.setStock(stock.getStock() + transactionDetail.getQty());
                 stockService.update(stock);
             } else if (transaction.getTransactionType().equals(TransactionType.SALE) || transaction.getTransactionType().equals(TransactionType.TRANSFER)) {

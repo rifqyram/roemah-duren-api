@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = ConstantTable.CUSTOMER)
@@ -37,7 +38,7 @@ public class Customer extends BaseEntity {
                 .name(name)
                 .address(address)
                 .email(email)
-                .mobilePhoneNo(mobilePhoneNo)
+                .mobilePhoneNo(StringUtils.hasText(mobilePhoneNo) ? "0" + mobilePhoneNo : null)
                 .build();
     }
 }
