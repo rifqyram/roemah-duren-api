@@ -9,9 +9,9 @@ import ac.unindra.roemah_duren_api.entity.Admin;
 import ac.unindra.roemah_duren_api.entity.Role;
 import ac.unindra.roemah_duren_api.entity.UserAccount;
 import ac.unindra.roemah_duren_api.repository.AdminRepository;
+import ac.unindra.roemah_duren_api.repository.UserAccountRepository;
 import ac.unindra.roemah_duren_api.service.AdminService;
 import ac.unindra.roemah_duren_api.service.RoleService;
-import ac.unindra.roemah_duren_api.service.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,26 +38,31 @@ public class AdminServiceImpl implements AdminService {
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
+    private final UserAccountRepository userAccountRepository;
 
-    @Value("${app.roemah_duren.email.superadmin}")
-    private String superAdminEmail;
-    @Value("${app.roemah_duren.password.superadmin}")
-    private String superAdminPassword;
+    @Value("${app.roemah_duren.email.admin}")
+    private String ADMIN_EMAIL;
+    @Value("${app.roemah_duren.password.password}")
+    private String ADMIN_PASSWORD;
+
+    @Value("${app.roemah_duren.email.owner}")
+    private String OWNER_EMAIL;
+    @Value("${app.roemah_duren.password.owner}")
+    private String OWNER_PASSWORD;
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
     public void initSuperAdmin() {
-        log.info("Start init super admin: {}", System.currentTimeMillis());
-        Optional<Admin> currentUser = adminRepository.findByUserAccount_Email(superAdminEmail);
+        log.info("Start init admin: {}", System.currentTimeMillis());
+        Optional<Admin> currentUser = adminRepository.findByUserAccount_Email(ADMIN_EMAIL);
         if (currentUser.isPresent()) return;
 
-        Role superAdmin = roleService.getOrSave(UserRole.ROLE_SUPER_ADMIN);
         Role admin = roleService.getOrSave(UserRole.ROLE_ADMIN);
 
         UserAccount account = UserAccount.builder()
-                .email(superAdminEmail.toLowerCase())
-                .password(passwordEncoder.encode(superAdminPassword))
-                .role(List.of(superAdmin, admin))
+                .email(ADMIN_EMAIL.toLowerCase())
+                .password(passwordEncoder.encode(ADMIN_PASSWORD))
+                .role(List.of(admin))
                 .isEnable(true)
                 .build();
 
@@ -65,7 +70,27 @@ public class AdminServiceImpl implements AdminService {
                 .userAccount(account)
                 .build();
         adminRepository.saveAndFlush(adminModel);
-        log.info("End init super admin: {}", System.currentTimeMillis());
+        log.info("End init admin: {}", System.currentTimeMillis());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @PostConstruct
+    public void initOwner() {
+        log.info("Start init owner: {}", System.currentTimeMillis());
+        Optional<Admin> currentUser = adminRepository.findByUserAccount_Email(OWNER_EMAIL);
+        if (currentUser.isPresent()) return;
+
+        Role owner = roleService.getOrSave(UserRole.ROLE_OWNER);
+
+        UserAccount account = UserAccount.builder()
+                .email(OWNER_EMAIL.toLowerCase())
+                .password(passwordEncoder.encode(OWNER_PASSWORD))
+                .role(List.of(owner))
+                .isEnable(true)
+                .build();
+        userAccountRepository.saveAndFlush(account);
+
+        log.info("End init owner: {}", System.currentTimeMillis());
     }
 
     @Transactional(rollbackFor = Exception.class)
