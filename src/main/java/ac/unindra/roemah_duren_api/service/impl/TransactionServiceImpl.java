@@ -9,10 +9,7 @@ import ac.unindra.roemah_duren_api.dto.response.TransactionDetailResponse;
 import ac.unindra.roemah_duren_api.dto.response.TransactionResponse;
 import ac.unindra.roemah_duren_api.entity.*;
 import ac.unindra.roemah_duren_api.repository.TransactionRepository;
-import ac.unindra.roemah_duren_api.service.BranchService;
-import ac.unindra.roemah_duren_api.service.CustomerService;
-import ac.unindra.roemah_duren_api.service.StockService;
-import ac.unindra.roemah_duren_api.service.TransactionService;
+import ac.unindra.roemah_duren_api.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.core.Local;
@@ -40,12 +37,15 @@ public class TransactionServiceImpl implements TransactionService {
     private final CustomerService customerService;
     private final BranchService branchService;
     private final StockService stockService;
+    private final AdminService adminService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public TransactionResponse create(TransactionRequest request) {
         log.info("Start create transaction : {}", System.currentTimeMillis());
         Transaction transaction = new Transaction();
+
+        Admin admin = adminService.findByContext();
 
         if (request.getCustomerId() != null) {
             Customer customer = customerService.getById(request.getCustomerId());
@@ -54,13 +54,14 @@ public class TransactionServiceImpl implements TransactionService {
 
         Branch targetBranch = null;
         if (request.getTargetBranchId() != null) {
-            if (!TransactionType.fromString(request.getTransactionType()).equals(TransactionType.TRANSFER))
+            if (!TransactionType.TRANSFER.equals(TransactionType.fromString(request.getTransactionType())))
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transfer Cabang hanya bisa dilakukan pada transaksi transfer");
             targetBranch = branchService.getById(request.getTargetBranchId());
             transaction.setTargetBranch(targetBranch);
         }
 
         Branch branch = branchService.getById(request.getBranchId());
+        transaction.setAdmin(admin);
         transaction.setBranch(branch);
         transaction.setTransDate(LocalDateTime.now());
         transaction.setTransactionType(TransactionType.fromString(request.getTransactionType()));
@@ -196,6 +197,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         return TransactionResponse.builder()
                 .id(transaction.getId())
+                .admin(transaction.getAdmin().toAdminResponse())
                 .transDate(date)
                 .customer(transaction.getCustomer() != null ? transaction.getCustomer().toResponse() : null)
                 .branch(transaction.getBranch().toResponse())

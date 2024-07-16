@@ -12,19 +12,24 @@ import ac.unindra.roemah_duren_api.repository.AdminRepository;
 import ac.unindra.roemah_duren_api.service.AdminService;
 import ac.unindra.roemah_duren_api.service.RoleService;
 import ac.unindra.roemah_duren_api.service.UserService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +38,35 @@ public class AdminServiceImpl implements AdminService {
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
+
+    @Value("${app.roemah_duren.email.superadmin}")
+    private String superAdminEmail;
+    @Value("${app.roemah_duren.password.superadmin}")
+    private String superAdminPassword;
+
+    @Transactional(rollbackFor = Exception.class)
+    @PostConstruct
+    public void initSuperAdmin() {
+        log.info("Start init super admin: {}", System.currentTimeMillis());
+        Optional<Admin> currentUser = adminRepository.findByUserAccount_Email(superAdminEmail);
+        if (currentUser.isPresent()) return;
+
+        Role superAdmin = roleService.getOrSave(UserRole.ROLE_SUPER_ADMIN);
+        Role admin = roleService.getOrSave(UserRole.ROLE_ADMIN);
+
+        UserAccount account = UserAccount.builder()
+                .email(superAdminEmail.toLowerCase())
+                .password(passwordEncoder.encode(superAdminPassword))
+                .role(List.of(superAdmin, admin))
+                .isEnable(true)
+                .build();
+
+        Admin adminModel = Admin.builder()
+                .userAccount(account)
+                .build();
+        adminRepository.saveAndFlush(adminModel);
+        log.info("End init super admin: {}", System.currentTimeMillis());
+    }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -61,6 +95,14 @@ public class AdminServiceImpl implements AdminService {
         Admin admin = getById(id);
         log.info("End getOne Admin: {}", System.currentTimeMillis());
         return toResponse(admin);
+    }
+
+    @Override
+    @Transactional
+    public Admin findByContext() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getPrincipal().toString();
+        return adminRepository.findByUserAccount_Email(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.SUCCESS_GET_DATA));
     }
 
     @Transactional(readOnly = true)
@@ -120,7 +162,7 @@ public class AdminServiceImpl implements AdminService {
                 .nip(admin.getNip())
                 .name(admin.getName())
                 .email(admin.getUserAccount().getEmail())
-                .mobilePhoneNo("0" + admin.getMobilePhoneNo())
+                .mobilePhoneNo(admin.getMobilePhoneNo() != null ? "0" + admin.getMobilePhoneNo() : null)
                 .status(admin.getUserAccount().getIsEnable())
                 .build();
     }

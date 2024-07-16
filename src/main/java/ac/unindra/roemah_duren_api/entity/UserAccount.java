@@ -1,6 +1,7 @@
 package ac.unindra.roemah_duren_api.entity;
 
 import ac.unindra.roemah_duren_api.constant.ConstantTable;
+import ac.unindra.roemah_duren_api.dto.response.UserResponse;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -66,5 +67,12 @@ public class UserAccount implements UserDetails {
     @Override
     public boolean isEnabled() {
         return isEnable;
+    }
+
+    public UserResponse toResponse() {
+        return UserResponse.builder()
+                .email(email)
+                .roles(role.stream().map(r -> r.getRole().getDescription()).toList())
+                .build();
     }
 }

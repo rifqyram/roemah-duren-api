@@ -1,6 +1,7 @@
 package ac.unindra.roemah_duren_api.entity;
 
 import ac.unindra.roemah_duren_api.constant.ConstantTable;
+import ac.unindra.roemah_duren_api.dto.response.AdminResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +24,15 @@ public class Admin extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_account_id", unique = true, nullable = false)
     private UserAccount userAccount;
+
+    public AdminResponse toAdminResponse() {
+        return AdminResponse.builder()
+                .id(id)
+                .email(userAccount.getEmail())
+                .nip(nip)
+                .name(name)
+                .mobilePhoneNo(mobilePhoneNo != null ? "0" + mobilePhoneNo : null)
+                .status(userAccount.getIsEnable())
+                .build();
+    }
 }

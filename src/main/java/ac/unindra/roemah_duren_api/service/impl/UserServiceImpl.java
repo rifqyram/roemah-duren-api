@@ -1,5 +1,6 @@
 package ac.unindra.roemah_duren_api.service.impl;
 
+import ac.unindra.roemah_duren_api.dto.response.UserResponse;
 import ac.unindra.roemah_duren_api.entity.UserAccount;
 import ac.unindra.roemah_duren_api.repository.UserAccountRepository;
 import ac.unindra.roemah_duren_api.service.UserService;
@@ -48,4 +49,15 @@ public class UserServiceImpl implements UserService {
         log.info("End getByContext : {}", System.currentTimeMillis());
         return userAccount;
     }
+
+    @Override
+    public UserResponse getUserInfoByContext() {
+        log.info("Start getUserByContext: {}", System.currentTimeMillis());
+        UserAccount userAccount = getByContext();
+        UserResponse response = userAccount.toResponse();
+        log.info("End getUserByContext: {}", System.currentTimeMillis());
+        return response;
+    }
+
+
 }

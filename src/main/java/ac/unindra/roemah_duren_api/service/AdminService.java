@@ -11,6 +11,7 @@ import java.util.List;
 public interface AdminService {
     AdminResponse create(AdminRequest request);
     AdminResponse getOne(String id);
+    Admin findByContext();
     Page<AdminResponse> getPage(PagingRequest request);
     List<AdminResponse> getAll();
     Admin getById(String id);

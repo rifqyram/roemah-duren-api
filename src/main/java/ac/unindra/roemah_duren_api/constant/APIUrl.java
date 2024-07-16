@@ -10,4 +10,5 @@ public class APIUrl {
     public static final String TRANSACTION_API = "/api/transactions";
     public static final String ADMIN_API = "/api/admins";
     public static final String DASHBOARD = "/api/dashboard";
+    public static final String USER_API = "/api/users";
 }

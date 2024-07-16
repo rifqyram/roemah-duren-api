@@ -37,33 +37,6 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    @Value("${app.roemah_duren.email.superadmin}")
-    private String superAdminEmail;
-    @Value("${app.roemah_duren.password.superadmin}")
-    private String superAdminPassword;
-
-    @Transactional(rollbackFor = Exception.class)
-    @PostConstruct
-    public void initSuperAdmin() {
-        log.info("Start init super admin: {}", System.currentTimeMillis());
-        Optional<UserAccount> currentUser = userAccountRepository.findByEmail(superAdminEmail);
-        if (currentUser.isPresent()) return;
-
-        Role superAdmin = roleService.getOrSave(UserRole.ROLE_SUPER_ADMIN);
-        Role admin = roleService.getOrSave(UserRole.ROLE_ADMIN);
-
-        UserAccount account = UserAccount.builder()
-                .email(superAdminEmail.toLowerCase())
-                .password(passwordEncoder.encode(superAdminPassword))
-                .role(List.of(superAdmin, admin))
-                .isEnable(true)
-                .build();
-
-        userAccountRepository.save(account);
-        log.info("End init super admin: {}", System.currentTimeMillis());
-    }
-
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse registerAdmin(AuthRequest request) {

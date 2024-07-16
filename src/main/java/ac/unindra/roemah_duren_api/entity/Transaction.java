@@ -23,6 +23,10 @@ import java.util.List;
 public class Transaction extends BaseEntity {
 
     @ManyToOne
+    @JoinColumn(name = "admin_id", nullable = false)
+    private Admin admin;
+
+    @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 

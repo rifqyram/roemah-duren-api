@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 public class TransactionResponse {
     private String id;
+    private AdminResponse admin;
     private CustomerResponse customer;
     private BranchResponse branch;
     private BranchResponse targetBranch;

@@ -7,8 +7,12 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
+
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, String>, JpaSpecificationExecutor<Admin> {
+    Optional<Admin> findByUserAccount_Email(String email);
+
     static Specification<Admin> hasSearchQuery(String q) {
         return (root, query, criteriaBuilder) -> {
             if (!StringUtils.hasText(q)) return criteriaBuilder.conjunction();
