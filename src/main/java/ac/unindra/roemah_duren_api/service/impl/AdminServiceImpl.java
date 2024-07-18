@@ -77,7 +77,7 @@ public class AdminServiceImpl implements AdminService {
     @PostConstruct
     public void initOwner() {
         log.info("Start init owner: {}", System.currentTimeMillis());
-        Optional<Admin> currentUser = adminRepository.findByUserAccount_Email(OWNER_EMAIL);
+        Optional<UserAccount> currentUser = userAccountRepository.findByEmail(OWNER_EMAIL);
         if (currentUser.isPresent()) return;
 
         Role owner = roleService.getOrSave(UserRole.ROLE_OWNER);
